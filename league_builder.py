@@ -1,20 +1,20 @@
 import csv
-import pprint
 import os
 
 class LeagueBuilder:
    FIELDNAMES = ("name", "height", "soccerexp", "guardians")
-   TEAMS  = ("Dragons", "Sharks","Raptors")
-   newline = "\n"
+   TEAMS  = ("Dragons", "Sharks", "Raptors")
+   OUTFILENAME = "teams.txt"
 
    def __init__(self, filename):
        self.filename = filename
        self.teamdict = {}
+       self.teamlenth = len(self.TEAMS)
        for team in self.TEAMS:
            self.teamdict[team] = []
 
    def persist(self):
-      fh = open("teams.txt", "w")
+      fh = open(self.OUTFILENAME, "w")
       for team in self.teamdict:
           fh.write(team+os.linesep)
           playerids = self.teamdict[team]
@@ -23,8 +23,7 @@ class LeagueBuilder:
              name = player["name"]
              exper = player["soccerexp"]
              guardians = player["guardians"]
-
-             player_line = "{0},{1},{2}".format(name,exper,guardians)
+             player_line = "{0},{1},{2}".format(name, exper, guardians)
              player_line+=os.linesep
              fh.write(player_line)
 
@@ -41,13 +40,11 @@ class LeagueBuilder:
            else:
                playeridswithoutexp.append(player["id"])
        for i,playerid in enumerate(playeridswithexp):
-           team = self.TEAMS[i%3]
+           team = self.TEAMS[i % self.teamlenth]
            self.assignteam(playerid,team)
        for i,playerid in enumerate(playeridswithoutexp):
-           team = self.TEAMS[i%3]
+           team = self.TEAMS[i % self.teamlenth]
            self.assignteam(playerid,team)
-       pprint.pprint(self.playermap)
-       pprint.pprint(self.teamdict)
 
    def loadplayers(self):
       self.playermap = {}

@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 
 class LeagueBuilder:
    FIELDNAMES = ("name", "height", "soccerexp", "guardians")
@@ -27,8 +28,29 @@ class LeagueBuilder:
              player_line+=os.linesep
              fh.write(player_line)
 
+   def genLetters(self):
+    for playerid in self.playermap:
+       player = self.playermap[playerid]
+       playername = re.sub(r"\s+", '_', player['name'])
+
+       with open("letters/{}.txt".format(playername), "w") as player_file:
+           letterbody = """Dear {0},
+           Please be advised that {1} will be on the {2} team for this season soccer league.
+           Practice will be starting on Jan, 11.
+                             
+           Best regards,
+                              
+           Coach Guido van Rossum
+          
+           """.format(player['guardians'], player['name'], player['team'])
+           player_file.write(str(letterbody))
+           player_file.close()
+
+
    def assignteam(self,playerid,team):
        self.teamdict[team].append(playerid)
+       player = self.playermap[playerid]
+       player['team'] = team
 
    def distributeplayers(self):
        playeridswithexp = []
@@ -62,3 +84,4 @@ if __name__ == "__main__":
    lb.loadplayers()
    lb.distributeplayers()
    lb.persist()
+   lb.genLetters()
